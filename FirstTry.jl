@@ -127,34 +127,29 @@ end
 IpopMinCheck!(Ipop::Matrix{Float64},xmin::Float64,i::Int64)
 
 ##
-
-
-
-#aaa=@btime minimum(cost)
-#aa = @btime findfirst(x -> x==aaa,cost)[1];
-GbestC = @code_warntype minimum(cost)
-GbestC = minimum(cost)
-
-#@code_llvm minimum(cost)
-#@code_typed minimum(cost)
-#@code_native minimum(cost)
-#@code_lowered minimum(cost)
-#@code_warntype minimum(cost)
+function PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
+  if PbestC[i]>=cost[i]
+    PbestC[i] = cost[i]
+    Pbest[:,i] = Ipop[:,i]
+  end
+  return Pbest
+end
+@btime PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
+using Profile
+@profile PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
+Profile.print()
+##
+GbestC = @btime minimum(cost)
 loc_best=0
 function FindLocBest!(loc_best::Int64, cost::Vector{Float64}, GbestC::Float64)
   loc_best = findfirst(x -> x==GbestC,cost)[1];
   return loc_best
 end
-FindLocBest!(loc_best::Int64, cost::Vector{Float64}, GbestC::Float64)
+loc_best = @btime FindLocBest!(loc_best::Int64, cost::Vector{Float64}, GbestC::Float64)
 
+Gbest=Ipop[:,loc_best]
 
-Gbest=Ipop[:,loc_best];
-
-
-
-
-
-
+#=
 
 i=1
 PbestC[i]>=cost[i]
@@ -198,3 +193,4 @@ end
 
 
 ##
+=#
