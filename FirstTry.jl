@@ -15,9 +15,9 @@ vmax=0.25*(xmax-xmin);
 
 loc_best=0;
 Gbest=zeros(Float64,n);
-GbestC=0.0;
+GbestC=100000.0;
 Pbest=similar(Ipop);
-PbestC=similar(cost);
+PbestC=100000*ones(Float64,N);
 
 #=function FullFunc(Ipop,Vel,cost,xmin,xmax,vmax)
 
@@ -70,30 +70,91 @@ i=1
 R1=rand(n)
 R2=rand(n)
 
-j=1
-function VelUpdate(W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
-  for j in 1:n
-    Vel[j,i] = W*Vel[j,i] + C1 * R1[j]*(Pbest[j,i] - Ipop[j,i]) + C2 * R2[j] .* (Gbest[j] - Ipop[j,i])
+function VelUpdate(i::Int64,W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+#  Vel[:,i] = W * Vel[:,i] + C1 * R1.*(Pbest[:,i] - Ipop[:,i]) + C2 * R2 .* (Gbest - Ipop[:,i])
+  @. Vel[:,i] = W* (@view Vel[:,i]) + C1 * R1*((@view Pbest[:,i]) - (@view Ipop[:,i])) + C2 * R2 * (Gbest - (@view Ipop[:,i]))
+end
+VelUpdate(i::Int64,W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+##
+
+function VelMaxCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64)
+  V = @view Vel[:,i]
+  for j=1:n
+    if V[j]>vmax
+      V[j]=vmax
+    end
+    #V[j] = minimum([V[j],vmax])
   end
 end
-@btime VelUpdate(W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+VelMaxCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64)
 
+function VelMinCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64)
+  V = @view Vel[:,i]
+  for j=1:n
+    if V[j]<-vmax
+      V[j]=-vmax
+    end
+    #V[j] = minimum([V[j],vmax])
+  end
+end
+VelMinCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64)
+##
+function IpopUpdate!(Ipop::Matrix{Float64}, Vel::Matrix{Float64}, i::Int64)
+  @. Ipop[:,i] = (@view Ipop[:,i]) + (@view Vel[:,i])
+end
+IpopUpdate!(Ipop::Matrix{Float64}, Vel::Matrix{Float64}, i::Int64)
 
-@btime Vel[:,i] = w*Vel[:,i] + C1 * R1.*(Pbest[:,i] - Ipop[:,i]) + C2 * R2 .* (Gbest - Ipop[:,i])
+function IpopMaxCheck!(Ipop::Matrix{Float64},xmax::Float64,i::Int64)
+  I = @view Ipop[:,i]
+  for j=1:n
+    if I[j]>xmax
+      I[j]=xmax
+    end
+    #V[j] = minimum([V[j],vmax])
+  end
+end
+IpopMaxCheck!(Ipop::Matrix{Float64},xmax::Float64,i::Int64)
 
-
+function IpopMinCheck!(Ipop::Matrix{Float64},xmin::Float64,i::Int64)
+  I = @view Ipop[:,i]
+  for j=1:n
+    if I[j]<xmin
+      I[j]=xmin
+    end
+    #V[j] = minimum([V[j],vmax])
+  end
+end
+IpopMinCheck!(Ipop::Matrix{Float64},xmin::Float64,i::Int64)
 
 ##
-PbestC=cost
-Pbest=Ipop
+
 
 
 #aaa=@btime minimum(cost)
 #aa = @btime findfirst(x -> x==aaa,cost)[1];
-
+GbestC = @code_warntype minimum(cost)
 GbestC = minimum(cost)
-loc_best=findfirst(x -> x==minimum(cost),cost)[1];
+
+#@code_llvm minimum(cost)
+#@code_typed minimum(cost)
+#@code_native minimum(cost)
+#@code_lowered minimum(cost)
+#@code_warntype minimum(cost)
+loc_best=0
+function FindLocBest!(loc_best::Int64, cost::Vector{Float64}, GbestC::Float64)
+  loc_best = findfirst(x -> x==GbestC,cost)[1];
+  return loc_best
+end
+FindLocBest!(loc_best::Int64, cost::Vector{Float64}, GbestC::Float64)
+
+
 Gbest=Ipop[:,loc_best];
+
+
+
+
+
+
 
 i=1
 PbestC[i]>=cost[i]
