@@ -125,19 +125,16 @@ function IpopMinCheck!(Ipop::Matrix{Float64},xmin::Float64,i::Int64)
   end
 end
 IpopMinCheck!(Ipop::Matrix{Float64},xmin::Float64,i::Int64)
-
 ##
-function PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
+Ip=Ipop[:,i]
+function PbestUpdate!(PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ip::Vector{Float64},i::Int64)
   if PbestC[i]>=cost[i]
     PbestC[i] = cost[i]
-    Pbest[:,i] = Ipop[:,i]
+    Pbest[:,i] = Ip
   end
   return Pbest
 end
-@btime PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
-using Profile
-@profile PbestUpdate(i::Int64,PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64})
-Profile.print()
+PbestUpdate!(PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ip::Vector{Float64},i::Int64)
 ##
 GbestC = @btime minimum(cost)
 loc_best=0
