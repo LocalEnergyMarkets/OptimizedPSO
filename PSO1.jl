@@ -5,7 +5,7 @@ end
 include("C:\\Users\\seyednh\\github\\OptimizedPSO\\PSOmodule1.jl")
 
 using BenchmarkTools
-const n=Int64(4);
+const n=Int64(1000);
 const N=Int64(10*n);
 using Main.PSO1
 ##
