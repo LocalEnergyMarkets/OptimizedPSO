@@ -34,3 +34,5 @@ InitPopMatrix!(Ipop::Matrix{Float64},Vel::Matrix{Float64},n::Int64,N::Int64,xmin
 CostAll!(cost::Vector{Float64}, Ipop::Matrix{Float64},N::Int64,n::Int64)
 VelAll!(N::Int64,n::Int64, W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64}, vmax::Float64)
 PopAll!(N::Int64,n::Int64, Vel::Matrix{Float64}, Ipop::Matrix{Float64}, xmax::Float64, xmin::Float64)
+## PSO algorithm
+InitPopMatrix!(Ipop::Matrix{Float64},Vel::Matrix{Float64},n::Int64,N::Int64,xmin::Float64,xmax::Float64,vmax::Float64)

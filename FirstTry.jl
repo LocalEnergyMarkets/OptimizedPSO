@@ -67,14 +67,20 @@ C1=2
 C2=2
 
 i=1
-R1=rand(n)
-R2=rand(n)
 
-function VelUpdate(i::Int64,W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
-#  Vel[:,i] = W * Vel[:,i] + C1 * R1.*(Pbest[:,i] - Ipop[:,i]) + C2 * R2 .* (Gbest - Ipop[:,i])
+R1=zeros(Float64,n)
+R2=zeros(Float64,n)
+
+function VelUpdate!(Vel::Matrix{Float64}, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+  for j=1:n
+    R1[j] = rand()
+    R2[j] = rand()
+  end
   @. Vel[:,i] = W* (@view Vel[:,i]) + C1 * R1*((@view Pbest[:,i]) - (@view Ipop[:,i])) + C2 * R2 * (Gbest - (@view Ipop[:,i]))
 end
-VelUpdate(i::Int64,W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+@btime VelUpdate!(Vel::Matrix{Float64}, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+@code_native VelUpdate(i::Int64,W::Float64, Vel::Matrix{Float64}, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+
 ##
 
 function VelMaxCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64)
