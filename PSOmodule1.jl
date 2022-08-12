@@ -111,7 +111,7 @@ function PbestUpdate!(PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Mat
 #  return Pbest
 end
 
-function GbestUpdate!(PbestC::Vector{Float64}, Pbest::Matrix{Float64}, GbestC::Float64, Gbest::Vector{Float64}, i::Int64, n::Int64)
+function GbestUpdate!(GbestC::Float64, Gbest::Vector{Float64}, PbestC::Vector{Float64}, Pbest::Matrix{Float64}, i::Int64, n::Int64)
   if GbestC>=PbestC[i]
     GbestC = PbestC[i]
     for j in 1:n
@@ -121,7 +121,19 @@ function GbestUpdate!(PbestC::Vector{Float64}, Pbest::Matrix{Float64}, GbestC::F
 #  return Pbest
 end
 
-function PSOalgorithm!(Vel::Matrix{Float64}, n::Int64, N::Int64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, PbestC::Vector{Float64}, Gbest::Vector{Float64}, GbestC::Float64, Ipop::Matrix{Float64},vmax::Float64,xmax::Float64,xmin::Float64,cost::Vector{Float64})
+function GbestCUpdate!(GbestC::Float64, PbestC::Vector{Float64},i::Int64)
+  if GbestC > PbestC[i]
+    #println("GbestC")
+    #println(GbestC)
+    #println("PbestC[i]")
+    #println(PbestC[i])
+    GbestC = PbestC[i]
+  else
+    GbestC = GbestC
+  end
+end
+
+function PSOalgorithm!(Gbest::Vector{Float64}, GbestC::Float64, Vel::Matrix{Float64}, n::Int64, N::Int64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, PbestC::Vector{Float64}, Ipop::Matrix{Float64},vmax::Float64,xmax::Float64,xmin::Float64,cost::Vector{Float64})
   for itr in 1:100
       W=rand()*(1-0.4)+0.4;
       for i in 1:N
@@ -137,9 +149,12 @@ function PSOalgorithm!(Vel::Matrix{Float64}, n::Int64, N::Int64, C1::Int64, C2::
 
           PbestUpdate!(PbestC::Vector{Float64}, cost::Vector{Float64}, Pbest::Matrix{Float64}, Ipop::Matrix{Float64}, i::Int64, n::Int64)
 
-          GbestUpdate!(PbestC::Vector{Float64}, Pbest::Matrix{Float64}, GbestC::Float64, Gbest::Vector{Float64}, i::Int64, n::Int64)
+          GbestC = GbestCUpdate!(GbestC::Float64, PbestC::Vector{Float64}, i::Int64)
+#println(GbestC)
+          GbestUpdate!(GbestC::Float64, Gbest::Vector{Float64}, PbestC::Vector{Float64}, Pbest::Matrix{Float64}, i::Int64, n::Int64)
       end
   end
+  return GbestC, Gbest
 end
 
 
