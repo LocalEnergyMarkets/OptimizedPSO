@@ -6,7 +6,7 @@ end
 #include("C:\\Users\\seyednh\\github\\OptimizedPSO\\PSOmodule1.jl")
 include(string(pwd(),"//PSOmodule1.jl"))
 using BenchmarkTools
-const n=Int64(500);
+const n=Int64(100);
 const N=Int64(10*n);
 using Main.PSO1
 ##
@@ -37,4 +37,4 @@ GlobalBest!(Gbest::Vector{Float64}, loc_best::Int64, Ipop::Matrix{Float64}, n::I
 
 
 ##
-GbestC, Gbest = @btime PSOalgorithm!(Gbest::Vector{Float64}, GbestC::Float64, Vel::Matrix{Float64}, n::Int64, N::Int64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, PbestC::Vector{Float64}, Ipop::Matrix{Float64},vmax::Float64,xmax::Float64,xmin::Float64,cost::Vector{Float64})
+GbestC, Gbest = PSOalgorithm!(Gbest::Vector{Float64}, GbestC::Float64, Vel::Matrix{Float64}, n::Int64, N::Int64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, PbestC::Vector{Float64}, Ipop::Matrix{Float64},vmax::Float64,xmax::Float64,xmin::Float64,cost::Vector{Float64})
