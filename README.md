@@ -1,2 +1,2 @@
 # OptimizedPSO
-Modify CostFunc function from 
+Modify CostFunc function from PSOmodule1...
