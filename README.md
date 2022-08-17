@@ -1,5 +1,5 @@
 # OptimizedPSO
-Step1: Modify CostFunc function from PSOmodule1. (Note that theconstraints should be defined as penalty terms)
+Step 1: Modify CostFunc function from PSOmodule1. (Note that theconstraints should be defined as penalty terms)
 
 Step 2: Modify the upper and lower bounds of the variables.
 
