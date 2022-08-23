@@ -27,12 +27,20 @@ function CostFunc(i::Int64, Ipop::Matrix{Float64}, n::Int64)
 end
 
 
-function VelUpdate!(Vel::Matrix{Float64}, n::Int64, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+#=function VelUpdate!(Vel::Matrix{Float64}, n::Int64, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
   for j=1:n
     R1[j] = rand()
     R2[j] = rand()
   end
   @. Vel[:,i] = W* (@view Vel[:,i]) + C1 * R1*((@view Pbest[:,i]) - (@view Ipop[:,i])) + C2 * R2 * (Gbest - (@view Ipop[:,i]))
+end=#
+
+function VelUpdate!(Vel::Matrix{Float64}, i::Int64, W::Float64, C1::Int64, C2::Int64, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+  #for j=1:n
+    #R1[j] = rand()
+    #R2[j] = rand()
+  #end
+  @. Vel[:,i] = W* (@view Vel[:,i]) + C1 * rand()*((@view Pbest[:,i]) - (@view Ipop[:,i])) + C2 * rand() * (Gbest - (@view Ipop[:,i]))
 end
 
 function VelMaxCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64,n::Int64)
@@ -137,7 +145,8 @@ function PSOalgorithm!(Gbest::Vector{Float64}, GbestC::Float64, Vel::Matrix{Floa
   for itr in 1:100
       W=rand()*(1-0.4)+0.4;
       for i in 1:N
-          VelUpdate!(Vel::Matrix{Float64}, n::Int64, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+          #VelUpdate!(Vel::Matrix{Float64}, n::Int64, i::Int64,W::Float64, C1::Int64, C2::Int64, R1::Vector{Float64}, R2::Vector{Float64}, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
+          VelUpdate!(Vel::Matrix{Float64}, i::Int64, W::Float64, C1::Int64, C2::Int64, Pbest::Matrix{Float64}, Gbest::Vector{Float64}, Ipop::Matrix{Float64})
           VelMaxCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64,n::Int64)
           VelMinCheck!(Vel::Matrix{Float64},vmax::Float64,i::Int64,n::Int64)
 
