@@ -1,0 +1,52 @@
+import numpy as np
+
+n = 4
+N = 10*n
+
+xmin = np.zeros([1,n], dtype=float)
+xmax = np.ones([1,n], dtype=float)
+
+vmax=0.25*(xmax-xmin)
+vmin=-vmax
+c1=2;
+c2=2;
+Nitr=100;
+
+Ipop = np.zeros([N,n], dtype=float)
+vel = np.zeros([N,n], dtype=float)
+cost = np.zeros([N,1], dtype=float)
+
+for i in range(N):
+
+    Ipop[i,:] = np.random.uniform(low=0.0, high=1.0, size=[1,n])*(xmax-xmin)+xmin
+    cost[i] = sum(Ipop[i,:])
+    vel[i,:] = np.random.uniform(low=0.0, high=1.0, size=[1,n])*(vmax-vmin)+vmin
+
+Pbest = [Ipop, cost]    
+loc_min = cost.argmin()
+Gbest = [Ipop[loc_min,:], cost[loc_min]]
+#%%
+for itr in range(100):
+
+    w = np.random.uniform(low=0.0, high=1.0)*(1-0.4) + 0.4
+    
+    for i in range(N):
+    
+        vel[i,:] = w*vel[i,:] + c1*np.random.uniform(low=0.0, high=1.0, size=[1,n])(Pbest[0][i,:]-Ipop[i,:])+ c2*np.random.uniform(low=0.0, high=1.0, size=[1,n])(Gbest[0]-Ipop[i,:])
+        
+        vel[i,:] = np.minimum(vel[i,:],vmax)
+        vel[i,:] = np.maximum(vel[i,:],vmin)
+        
+        Ipop[i,:] = Ipop[i,:] + vel[i,:]
+        Ipop[i,:] = np.minimum(Ipop[i,:],xmax)
+        Ipop[i,:] = np.maximum(Ipop[i,:],xmin)
+        
+        cost[i] = sum(Ipop[
+            Pbest[0][i,:] = Ipop[i,:]I,:])
+  
+        
+        if Gbest[1]>cost[i]:
+            Gbest[0] = Ipop[i,:]
+            Gbest[1] = cost[i]      
+        if Pbest[1][i]>cost[i]:
+            Pbest[1][i] = cost[i]

@@ -1,0 +1,43 @@
+clc
+clear
+n=4;
+N=4*n;
+xmin=zeros(1,n);
+xmax=ones(1,n);
+
+vmax=0.25*(xmax-xmin);
+vmin=-vmax;
+c1=2;
+c2=2;
+Nitr=100;
+Ipop=zeros(N,n);
+vel=zeros(N,n);
+cost=zeros(N,1);
+tic
+for i=1:N
+Ipop(i,:)=rand(1,n).*(xmax-xmin)+xmin;
+cost(i,1)=sum(exp(-Ipop(i,:)).*sin(2*pi*Ipop(i,:)));
+vel(i,:)=rand(1,n).*(vmax-vmin)+vmin;
+end
+toc
+pbest=[Ipop,cost];
+loc_min=find(cost==min(cost));
+gbest=[Ipop(loc_min(1,1),:),min(cost)];
+for itr=1:Nitr
+    w=rand()*(1-0.4)+0.4;
+    for i=1:N
+        vel(i,:)=w*vel(i,:)+c1*rand(1,n).*(pbest(i,1:n)-Ipop(i,:))+c2*rand(1,n).*(gbest(1,1:n)-Ipop(i,:));
+        vel(i,:)=min(vel(i,:),vmax);
+        vel(i,:)=max(vel(i,:),vmin);
+        Ipop(i,:)=Ipop(i,:)+vel(i,:);
+        Ipop(i,:)=max(Ipop(i,:),xmin);
+        Ipop(i,:)=min(Ipop(i,:),xmax);
+        cost(i,:)=sum(exp(-Ipop(i,:)).*sin(2*pi*Ipop(i,:)));
+        if pbest(i,1+n)>cost(i,1)
+            pbest(i,:)=[Ipop(i,:),cost(i,1)];
+        end
+        if gbest(1,n+1)>cost(i,1)
+            gbest=[Ipop(i,:),cost(i,1)];
+        end
+    end
+end
